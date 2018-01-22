@@ -146,13 +146,92 @@ This code may only be used under the license found at https://github.com/swarmci
 
             .blur {
                 @apply --unlock-blur;
-            } 
+            }
 
+            /* .foundARC {
+                @apply --small-bold;
+                color: var(--sc-grey4);
+                margin-bottom: 5vh;
+            }
+
+            .container[wide-layout] .foundARC {
+                @apply --small-bold;
+                color: var(--sc-blue);
+                margin-bottom: 10vw;
+            }
+
+            */
+
+            .box {
+                @apply --layout-vertical;
+                @apply --layout--start-justified;
+                @apply --layout--start;
+                box-sizing: border-box;
+                padding: 54px 25px 40px;
+                background-color: var(--sc-white);
+                max-width: 450px;
+                margin-bottom: 8vh;
+            }
+
+            .container[wide-layout] .box {
+                box-sizing: border-box;
+                padding: 40px 40px 40px 40px;
+                @apply --layout-horizontal;
+                @apply --layout-start-justified;
+                @apply --layout-center;
+                margin: 0px 0px 10vh 0px;
+                max-width: 650px;
+            }
+
+            .trianglecontainer {
+                @apply --layout-horizontal;
+                @apply --layout-center-justified;
+                width: 100%;
+                position: relative;
+                margin-bottom: -30px;
+            }
+
+            .container[wide-layout] .trianglecontainer {
+                @apply --layout-horizontal;
+                @apply --layout-start-justified;
+                @apply --layout-start;
+                margin: 0px 30px 0px 0px;
+                width: 54px;
+            }
+
+            .triangle {
+                @apply --alert-blue-normal;
+                position: relative;
+            }
+
+            .textbox {
+                @apply --body-bold;
+                color: var(--sc-grey4);
+                @apply --layout-vertical;
+                @apply --layout-center-justified;
+                text-align: center;
+            }
+
+            .container[wide-layout] .textbox {
+                text-align: left;
+            }
+
+            .inner-bottom {
+                margin-top: 10px;
+            }
+
+            .bluelink {
+                @apply --blue-link;
+                font-size: 16px;
+                letter-spacing: 0;
+                line-height: 19px;
+            }
 
             @media only screen and (-webkit-min-device-pixel-ratio: 1.5),
             only screen and (min--moz-device-pixel-ratio: 1.5),
             only screen and (min-resolution: 240dpi) {
-                .close {
+                .close,
+                .triangle {
                     @apply --retina;
                 }
             }
@@ -168,6 +247,25 @@ This code may only be used under the license found at https://github.com/swarmci
                     <div id="fiatbalance" class="fiat">= {{balance.swt.balanceUsd}} USD</div>
                 </div>
                 <div id="ethbalance" class="eth">{{balance.eth.balanceEth}} ETH</div>
+                <template is="dom-if" if="{{foundARC}}">
+                    <div class="warning" id="foundarcbox">
+                        <template is="dom-if" if="{{!wide}}">
+                            <div class="trianglecontainer">
+                                <div class="triangle"></div>
+                            </div>
+                        </template>
+                    <div class="box">
+                        <template is="dom-if" if="{{wide}}">
+                            <div class="trianglecontainer">
+                                <div class="triangle"></div>
+                            </div>
+                        </template>
+                        <div class="textbox">
+                            <div class="foundARC">{{localize('An ARCbalance was found on this account. You can convert ARC to SWT on')}} <span class="bluelink" on-tap="_linkTapped">legacy.swarm.city</span></div>
+                        </div>
+                    </div>
+                    </div>
+                </template>
             </div>
             <div id="divider1" class="divider"></div>
             <display-transaction-status id="txstatus" path="{{path}}" shortcode="{{shortcode}}" send="{{send}}" start="{{start}}"></display-transaction-status>
@@ -278,6 +376,14 @@ This code may only be used under the license found at https://github.com/swarmci
                         observer: '_blur',
                     },
                     /**
+                    * is true when an ARC balance is found for this pubkey
+                    * @type {Boolean}
+                    */
+                    foundARC: {
+                        type: Boolean,
+                        value: false,
+                    },
+                    /**
                     * contains the private key
                     * @type {String}
                     */
@@ -381,6 +487,12 @@ This code may only be used under the license found at https://github.com/swarmci
             */
             _privateKeyObserver() {
                 this.togglePrivateKey = !this.togglePrivateKey;
+            }
+           /**
+            * when the link is tapped, this should lead to the legacy-site
+            */
+            _linkTapped(){
+                // console.log("Tapped the link");
             }
            /**
             * Checks length of tx-array and sets boolean accordingly
@@ -513,6 +625,23 @@ This code may only be used under the license found at https://github.com/swarmci
                                 );
                                 if (this.showDivider) {
                                 this.$$('#divider2').animate(
+                                    [
+                                        {'opacity': '1'},
+                                        {'opacity': '0'},
+                                    ],
+                                    {
+                                        fill: 'forwards',
+                                        duration: 150,
+                                        iterations: 1,
+                                        iterationStart: 0,
+                                        easing: 'cubic-bezier(0.42,0,0.177,0.751)',
+                                        delay: 0,
+                                        endDelay: 0,
+                                    }
+                                );
+                                }
+                                if (this.foundARC){
+                                    this.$$('#foundarcbox').animate(
                                     [
                                         {'opacity': '1'},
                                         {'opacity': '0'},
@@ -681,6 +810,23 @@ This code may only be used under the license found at https://github.com/swarmci
                                         }
                                     );
                                 }
+                                if (this.foundARC){
+                                    this.$$('#foundarcbox').animate(
+                                    [
+                                        {'opacity': '1'},
+                                        {'opacity': '0'},
+                                    ],
+                                    {
+                                        fill: 'forwards',
+                                        duration: 150,
+                                        iterations: 1,
+                                        iterationStart: 0,
+                                        easing: 'cubic-bezier(0.42,0,0.177,0.751)',
+                                        delay: 0,
+                                        endDelay: 0,
+                                    }
+                                );
+                                }
                                 this.$.divider3.animate(
                                     [
                                         {'opacity': '1'},
@@ -837,6 +983,23 @@ This code may only be used under the license found at https://github.com/swarmci
                                         }
                                     );
                                 }
+                                if (this.foundARC){
+                                    this.$$('#foundarcbox').animate(
+                                    [
+                                        {'opacity': '1'},
+                                        {'opacity': '0'},
+                                    ],
+                                    {
+                                        fill: 'forwards',
+                                        duration: 150,
+                                        iterations: 1,
+                                        iterationStart: 0,
+                                        easing: 'cubic-bezier(0.42,0,0.177,0.751)',
+                                        delay: 0,
+                                        endDelay: 0,
+                                    }
+                                );
+                                }
                                 this.$.divider3.animate(
                                     [
                                         {'opacity': '1'},
@@ -985,6 +1148,23 @@ This code may only be used under the license found at https://github.com/swarmci
                                     }
                                 );
                             }
+                            if (this.foundARC){
+                                    this.$$('#foundarcbox').animate(
+                                    [
+                                        {'opacity': '0'},
+                                        {'opacity': '1'},
+                                    ],
+                                    {
+                                        fill: 'forwards',
+                                        duration: 150,
+                                        iterations: 1,
+                                        iterationStart: 0,
+                                        easing: 'cubic-bezier(0.42,0,0.177,0.751)',
+                                        delay: 0,
+                                        endDelay: 0,
+                                    }
+                                );
+                                }
                             this.$.divider3.animate(
                                 [
                                     {'opacity': '0'},
@@ -1125,6 +1305,23 @@ This code may only be used under the license found at https://github.com/swarmci
                                     }
                                 );
                             }
+                            if (this.foundARC){
+                                    this.$$('#foundarcbox').animate(
+                                    [
+                                        {'opacity': '0'},
+                                        {'opacity': '1'},
+                                    ],
+                                    {
+                                        fill: 'forwards',
+                                        duration: 150,
+                                        iterations: 1,
+                                        iterationStart: 0,
+                                        easing: 'cubic-bezier(0.42,0,0.177,0.751)',
+                                        delay: 0,
+                                        endDelay: 0,
+                                    }
+                                );
+                                }
                             this.$.divider3.animate(
                                 [
                                     {'opacity': '0'},
