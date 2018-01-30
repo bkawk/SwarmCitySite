@@ -25,6 +25,9 @@ import ethereumTx from 'ethereumjs-tx';
 import {
   simpleEncode,
   simpleDecode} from 'ethereumjs-abi';
+import ECIES from 'bitcore-ecies';
+import bitcore from 'bitcore-lib';
+
 export {
   simpleEncode,
   simpleDecode,
@@ -49,4 +52,6 @@ export {
   QRCode,
   moment,
   ethereumTx,
+  ECIES,
+  bitcore
 };
